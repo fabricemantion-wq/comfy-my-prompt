@@ -86,7 +86,7 @@ Registers a ComfyUI extension that:
 
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/your-username/My_Prompt
+git clone https://github.com/fabricemantion-wq/comfy-my-prompt
 ```
 
 2. Restart ComfyUI.
