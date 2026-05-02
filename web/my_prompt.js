@@ -27,20 +27,12 @@ function injectStyles() {
         padding:3px 9px; border-radius:20px; font-size:12px;
         border:1px solid #2e2e2e; background:#1a1a1a; color:#aaa;
         cursor:pointer; user-select:none; transition:all .15s;
-        white-space:nowrap; position:relative;
+        white-space:nowrap;
     }
     .mp-word:hover       { border-color:#1a5fa8; color:#ccc; background:#1e2a38; }
     .mp-word.active      { border-color:#1a5fa8; background:#1a3a5c; color:#7db8f0; }
     .mp-word.active-space{ border-color:#2a7a4a; background:#1a3c2a; color:#7dd4a0; }
 
-    /* Tooltip (FR label shown below) */
-    .mp-fr-tip {
-        position:absolute; top:calc(100% + 5px); left:50%; transform:translateX(-50%);
-        background:#0a0a0a; border:1px solid #2a2a2a; border-radius:5px;
-        padding:3px 8px; font-size:11px; color:#888; white-space:nowrap;
-        pointer-events:none; opacity:0; transition:opacity .15s; z-index:100;
-    }
-    .mp-word:hover .mp-fr-tip { opacity:1; }
 
     /* Category tabs */
     .mp-tab {
@@ -337,9 +329,6 @@ async function openModal(node) {
                     chip.innerHTML=`${word} <span class="mp-weight-badge">${info.weight.toFixed(1)}</span>`;
                 else chip.textContent=word;
 
-                // Tooltip FR
-                if(fr){ const tip=el("div",null); tip.className="mp-fr-tip"; tip.textContent=fr; chip.appendChild(tip); }
-
                 chip.addEventListener("mouseenter",()=>syncHighlight(word));
                 chip.addEventListener("mouseleave", ()=>syncHighlight(null));
 
@@ -448,25 +437,23 @@ async function openModal(node) {
         const fixedTop=el("div","padding:12px 14px 10px;display:flex;flex-direction:column;gap:6px;flex-shrink:0;border-bottom:1px solid #1e1e1e;");
 
         fixedTop.appendChild(mkSep("Add a word"));
-        const newWordIn=el("input","width:100%;box-sizing:border-box;"); newWordIn.className="mp-input"; newWordIn.placeholder="New word (EN)…";
-        const newWordFrIn=el("input","width:100%;box-sizing:border-box;margin-top:4px;"); newWordFrIn.className="mp-input"; newWordFrIn.placeholder="Label / translation (optional)…";
+        const newWordIn=el("input","width:100%;box-sizing:border-box;"); newWordIn.className="mp-input"; newWordIn.placeholder="New word…";
         const catSel=el("select","width:100%;box-sizing:border-box;margin-top:4px;"); catSel.className="mp-input";
         categories.forEach(c=>{ const o=document.createElement("option"); o.value=c.id; o.textContent=c.label; catSel.appendChild(o); });
         if(activeCatId!=="all") catSel.value=activeCatId;
         const addWordBtn=el("button","width:100%;margin-top:4px;"); addWordBtn.className="mp-btn primary"; addWordBtn.textContent="+ Add word";
         addWordBtn.onclick=()=>{
-            const en=newWordIn.value.trim(); const fr=newWordFrIn.value.trim(); const catId=catSel.value; if(!en) return;
+            const en=newWordIn.value.trim(); const catId=catSel.value; if(!en) return;
             const cat=categories.find(c=>c.id===catId);
             const exists=cat&&cat.words.some(w=>wordEn(w).toLowerCase()===en.toLowerCase());
             if(cat&&!exists){
-                cat.words.push({en,fr});
+                cat.words.push(en);
                 sortWords(cat.words);
-                apiSave({categories,presets}); newWordIn.value=""; newWordFrIn.value=""; renderWords(); renderSidebar();
+                apiSave({categories,presets}); newWordIn.value=""; renderWords(); renderSidebar();
             }
         };
-        newWordIn.addEventListener("keydown",e=>{ if(e.key==="Enter") newWordFrIn.focus(); });
-        newWordFrIn.addEventListener("keydown",e=>{ if(e.key==="Enter") addWordBtn.click(); });
-        fixedTop.append(newWordIn,newWordFrIn,catSel,addWordBtn);
+        newWordIn.addEventListener("keydown",e=>{ if(e.key==="Enter") addWordBtn.click(); });
+        fixedTop.append(newWordIn,catSel,addWordBtn);
 
         fixedTop.appendChild(mkSep("Add a category"));
         const newCatIn=el("input","width:100%;box-sizing:border-box;"); newCatIn.className="mp-input"; newCatIn.placeholder="Category name…";
