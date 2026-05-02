@@ -4,6 +4,8 @@ A visual prompt builder node for [ComfyUI](https://github.com/comfyanonymous/Com
 Build your prompts by clicking categorized word chips, set token weights, save presets — all from an interactive modal.
 
 ---
+![comfy-my-prompt](asset/my_prompt.png)
+
 
 ## Features
 
